@@ -19,6 +19,16 @@ class D3Chart extends React.Component {
         const barOffset = 5;
         const backgroundColor = "#ABCDEF";
         const fillColor = "#FEDCBA";
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(barData)])
+            .range([0, height]);
+        const xScale = d3.scaleBand()
+            .domain(barData)
+            .paddingInner(0.2)
+            .paddingOuter(0.1)
+            .range([0, width]);
+
         d3.select('#viz').append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -26,15 +36,17 @@ class D3Chart extends React.Component {
         .selectAll('rect').data(barData)
             .enter().append('rect')
                 .style('fill', fillColor)
-                .attr('width', barWidth)
+                .attr('width', (d) => {
+                    return xScale.bandwidth();
+                })
                 .attr('height', (d, i) => {
-                    return d;
+                    return yScale(d);
                 })
                 .attr('x', (d, i) => {
-                    return i * (barWidth + barOffset);
+                    return xScale(d);
                 })
                 .attr('y', (d, i) => {
-                    return height - d;
+                    return height - yScale(d);
                 });
     }
 
